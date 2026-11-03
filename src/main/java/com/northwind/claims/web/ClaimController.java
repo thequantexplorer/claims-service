@@ -1,10 +1,10 @@
 package com.northwind.claims.web;
 
 import com.northwind.claims.auth.CurrentUser;
-import com.northwind.claims.coverage.CoverageCalculator;
 import com.northwind.claims.model.Claim;
 import com.northwind.claims.model.ClaimRepository;
 import com.northwind.claims.model.PolicyRepository;
+import com.northwind.claims.payout.PayoutCalculator;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -36,6 +36,6 @@ public class ClaimController {
         Claim claim = ClaimAccess.findVisible(claims, id, user);
         var policy = policies.findById(claim.getPolicyId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return Map.of("claim", claim, "payableCents", CoverageCalculator.payableCents(claim, policy));
+        return Map.of("claim", claim, "payableCents", PayoutCalculator.payableCents(claim, policy));
     }
 }
