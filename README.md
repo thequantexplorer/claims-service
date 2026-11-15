@@ -17,3 +17,7 @@ Consumers: `claims-portal` (customer web portal), `adjuster-desktop` (Windows ap
 ./mvnw -B verify          # build + tests
 ./mvnw spring-boot:run    # http://localhost:8080
 ```
+
+## Caller identity
+
+Requests under `/api/` must carry `X-User-Id` and `X-User-Role` signed by the API gateway: `X-Gateway-Timestamp` (epoch seconds, within 5 minutes) and `X-Gateway-Signature`, the hex HMAC-SHA256 of `userId\nrole\ntimestamp\nMETHOD\npath[?query]` keyed with the shared secret (`GATEWAY_SIGNING_SECRET`, see `GatewaySignature`). Without a configured secret every `/api/` request gets 401. Run the service on an internal network that only the gateway can reach.
