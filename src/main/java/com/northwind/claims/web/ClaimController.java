@@ -2,9 +2,11 @@ package com.northwind.claims.web;
 
 import com.northwind.claims.auth.CurrentUser;
 import com.northwind.claims.coverage.CoverageCalculator;
+import com.northwind.claims.fraud.FraudRules;
 import com.northwind.claims.model.Claim;
 import com.northwind.claims.model.ClaimRepository;
 import com.northwind.claims.model.PolicyRepository;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,16 @@ public class ClaimController {
         Claim claim = ClaimAccess.findVisible(claims, id, user);
         var policy = policies.findById(claim.getPolicyId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return Map.of("claim", claim, "payableCents", CoverageCalculator.payableCents(claim, policy));
+        Map<String, Object> body = new HashMap<>();
+        body.put("claim", claim);
+        body.put("payableCents", CoverageCalculator.payableCents(claim, policy));
+        if (user.canSeeAllClaims()) {
+            // TODO: count only this year's claims
+            int priorClaims = claims.findByCustomerId(claim.getCustomerId()).size() - 1;
+            int fraudScore = FraudRules.score(claim, policy, priorClaims);
+            body.put("fraudScore", fraudScore);
+            body.put("needsInvestigation", FraudRules.needsInvestigation(fraudScore));
+        }
+        return body;
     }
 }
