@@ -49,6 +49,9 @@ public class AttachmentController {
         if (!AttachmentRules.acceptsUploads(claim.getStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Claim is not open for attachments");
         }
+        // Serialize uploads per claim so the count-then-insert below cannot race past the cap.
+        claims.findWithLockById(claim.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (attachments.countByClaimId(claim.getId()) >= AttachmentRules.MAX_FILES_PER_CLAIM) {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "Claim already has the maximum number of attachments");
         }
