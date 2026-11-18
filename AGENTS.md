@@ -6,3 +6,4 @@
 - Customers may only read their own claims. Load claims through `ClaimAccess.findVisible`, which returns 404 for other customers' claims.
 - Every bug fix ships with a regression test.
 - Test layout: unit tests next to each package under `src/test/java`; API integration tests use `@SpringBootTest` + `MockMvc` against the in-memory H2 database seeded by `SeedData`.
+- End-to-end tests are `*IT` classes under `src/test/java/com/northwind/claims/e2e`, run by Failsafe during `verify`; they start the service on a random port and call the API over HTTP.
