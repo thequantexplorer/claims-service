@@ -5,8 +5,7 @@ Calculates, schedules and pays insurance claims for Northwind's claims platform.
 | Package | What it does |
 |---|---|
 | `intake` | Validates new claims (reporting window, installments, payee) |
-| `coverage` | Payable amount after deductible and coverage limit |
-| `payouts` | Monthly installment schedules |
+| `payout` | `PayoutCalculator`: payable amount after deductible and coverage limit, and monthly installment schedules |
 | `fraud` | Risk score; high scores go to special investigations |
 | `documents` | Required documents per claim type |
 | `notifications` | Customer status emails |
